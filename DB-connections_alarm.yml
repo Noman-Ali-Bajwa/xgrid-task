@@ -28,5 +28,5 @@ Resources:
       Namespace: AWS/RDS
       Period: 60
       Statistic: Average
-      Threshold: 100
+      Threshold: 90
  
