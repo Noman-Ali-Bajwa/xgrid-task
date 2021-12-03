@@ -1,0 +1,33 @@
+#NOTE: this a pseudo yaml  with dummy values in places, it may contain format errors.
+#      the purpose of submitting it is to demonstrate the understanding of the CloudWatch
+#      alarms EC2 metrics to take decisions on the scaling of our EC2 instance
+
+#     Such a cloudwatch alarm based on CPUUtilization merics can help us in the event of the anticipated load and lets us 
+#     take a decision and implement that scaling decision before we have a performance downgrade on the user end.
+
+### aws cloudformation  create-stack --stack-name ec2AS --template-body file://$PWD/EC2_auto_scaling.yml
+
+
+myScaleOutPolicy:
+  Type: AWS::AutoScaling::ScalingPolicy
+  Properties:
+    AdjustmentType: ChangeInCapacity
+    AutoScalingGroupName: !Ref <ASG_group_name>
+    ScalingAdjustment: '1'
+CPUAlarmHigh:
+  Type: AWS::CloudWatch::Alarm
+  Properties:
+    EvaluationPeriods: '1'
+    Statistic: Average
+    Threshold: '10'
+    AlarmDescription: Alarm if CPU too high or metric disappears indicating instance is down
+    Period: '60'
+    AlarmActions:
+    - !Ref myScaleOutPolicy
+    Namespace: AWS/EC2
+    Dimensions:
+    - Name: AutoScalingGroupName
+      Value:
+        Ref: [<name of the auto-scaling group our EC2 instance is a part of>]
+    ComparisonOperator: GreaterThanThreshold
+    MetricName: CPUUtilization
