@@ -19,7 +19,7 @@
 - *Cofigure apache2 to run cgi scripts from root directory*
 - *Connect with rds instance from EC2 and populate database using dummy_db.sql*
 - *Restart apache2 service*
-- *Access the service by navigating to http://<EC2-ElasticIP>*
+- *Access the service by navigating to http://EC2-ElasticIP*
 - *Generate PDF*
 
 
