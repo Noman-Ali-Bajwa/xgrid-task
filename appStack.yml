@@ -3,7 +3,7 @@
 #       This stack uses my personal 'free-tier' AWS account key pair and thus is limited in terms of provision of 
 #       resources. The resources being created in this stack are being created in the default VPC and the subnet being 
 #       used is also the default subnet. In a produciton environment we can't adhere to such practices , it's preferrbale to 
-#       to create a seperate VPC for an application resources to apply segregation and ease of access and understanfing.
+#       to create a seperate VPC for an application resources to apply segregation and ease of access and understanding.
 
 Resources:
 #create an EC2 instance and install apache web server on it to server the code.
