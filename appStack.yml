@@ -1,0 +1,106 @@
+# NOTE: This stack alligns with the concept of provision of minimum viable functionality to demonstrate our service.
+#       It is by no means exact replication of what is to be done in the production environment.
+#       This stack uses my personal 'free-tier' AWS account key pair and thus is limited in terms of provision of 
+#       resources. The resources being created in this stack are being created in the default VPC and the subnet being 
+#       used is also the default subnet. In a produciton environment we can't adhere to such practices , it's preferrbale to 
+#       to create a seperate VPC for an application resources to apply segregation and ease of access and understanfing.
+
+Resources:
+#create an EC2 instance and install apache web server on it to server the code.
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      ImageId: ami-0279c3b3186e54acd
+      KeyName: key
+
+  #attach the security group being created in the subsequent step with our EC2 instance.
+      SecurityGroups:
+        - !Ref 'EC2SecurityGroup'
+
+  #base64 encoded bash script to install and enable apache2 webserver,
+  #install mysql client on the EC2.
+  #install python library to support MySQLDb
+  #enables apach2 cgi module 
+
+      UserData: !Base64 |
+        #!/bin/bash -xe
+        sudo apt update
+        sudo apt install apache2
+        sudo ufw allow 'Apache'
+        sudo systemctl enable apache2
+        sudo systemctl start apache2
+        sudo apt install mysql-client-core-8.0  
+        sudo pip3 install mysqlclient
+        sudo a2enmod cgi      
+
+  #get an Elastic IP address and associate it with our EC2 instance.
+  IPAddress:
+    Type: AWS::EC2::EIP
+  IPAssoc:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      InstanceId: !Ref 'EC2Instance'
+      EIP: !Ref 'IPAddress'
+
+  #create a security group and configure inbound rule for tcp traffic on port 80 (apache2) and 22 (SSH).
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: expose HTTP,SSH.
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: '22'
+        ToPort: '22'
+        CidrIp: 0.0.0.0/0
+        
+  #create  mysql RDS instance for our MYSQL database, initialize master database and create a user .
+  MasterDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: "appDB"
+      Engine: MySQL
+      MasterUsername: adminadmin
+      MasterUserPassword: password123
+      DBInstanceClass: db.t2.micro
+      AllocatedStorage: '5'
+  #the MaxAllocatedStorage property in turns enables the storage-auto-scaling.
+      MaxAllocatedStorage: '20'
+  #refer to the Database security group being created in the subsequent step.
+      DBSecurityGroups:
+        - !Ref 'DBSecurityGroup'
+  #create a security group for database access and create an ingress refering to the EC2 security group (DB instance available to traffic from within the subnet
+  
+  DBSecurityGroup:
+    Type: AWS::RDS::DBSecurityGroup
+    Properties:
+      GroupDescription: Security Group for database access
+      DBSecurityGroupIngress:
+        EC2SecurityGroupName: !Ref 'EC2SecurityGroup'
+
+
+Outputs:
+  InstanceId:
+    Description: InstanceId of the newly created EC2 instance
+    Value: !Ref 'EC2Instance'
+  InstanceIPAddress:
+    Description: IP address of the newly created EC2 instance
+    Value: !Ref 'IPAddress'
+  MasterJDBCConnectionString:
+    Description: JDBC connection string for the master database
+    Value: !Join ['', ['jdbc:mysql://', !GetAtt [MasterDB, Endpoint.Address], ':', !GetAtt [MasterDB, Endpoint.Port] ]]
+
+### Depending upon the need we can enable read replicas man
+#
+#    ReplicaDB:
+#    Type: AWS::RDS::DBInstance
+#    Properties:
+#      SourceDBInstanceIdentifier: !Ref 'MasterDB'
+#      DBInstanceClass: !Ref 'DBInstanceClass'
+#      Tags:
+#      - Key: Name
+#       Value: Read Replica Database                         
