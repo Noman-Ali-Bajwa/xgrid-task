@@ -6,7 +6,7 @@
 
 - Setup AWS profile .
 - Create AWS CLoudformation stack.
-- Server and access the service.
+- Configure Server and access the service.
 
 
 ## Overview
