@@ -44,7 +44,12 @@ Resources:
   #attach the security group being created in the subsequent step with our EC2 instance.
       SecurityGroups:
         - !Ref 'EC2SecurityGroup'
-  #base64 encoded bash script inititae cfn_init_bootstrap script which in turn installs apache2 and mysql-client.
+        
+  #base64 encoded bash script to
+  # - installcfn-bootstrap script
+  # - execute cfn-init script
+  # - install python library
+  # - enable apache2 cgi module
       UserData: 
         Fn::Base64: !Sub | 
            #!/bin/bash -xe
@@ -55,6 +60,7 @@ Resources:
            sudo /usr/local/bin/cfn-init --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region}
            pip3 install mysqlclient
            a2enmod cgi      
+           
   #get an Elastic IP address and associate it with our EC2 instance.
   IPAddress:
     Type: AWS::EC2::EIP
