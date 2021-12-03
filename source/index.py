@@ -2,7 +2,7 @@
 import MySQLdb
 
 print("Content-Type: text/html\n")
-db = MySQLdb.connect("amk2uwy70lpiq8.c2jyhmhbxfxd.us-east-1.rds.amazonaws.com","adminadmin","password123","appDB" )
+db = MySQLdb.connect("<endpoint_reducted>","adminadmin","password123","appDB" )
 cursor = db.cursor()
 sql='Select * from employees'
 print(""" 
