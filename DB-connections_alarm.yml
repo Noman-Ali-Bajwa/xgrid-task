@@ -1,0 +1,32 @@
+#NOTE: this a pseudo yaml  with dummy values in places, it may contain format errors
+#      the purpose of submitting it is to demonstrate the understanding of the CloudWatch
+#      alarms metrics to take decisions on the scaling of the rds instance.
+#      such a cloudwatch alram should provide us with a viable solution for the anticipated traffic spike by alerting
+#      us when the number of average data connections cross our demo-threshold value of 100 connections and thus invoke
+#      to take the appropriate scaling measure to ensure the service performance . The DBInstanceIdentifier field will 
+#      be used to refer to our mysql rds instance .
+
+## aws cloudformation  create-stack--stack-name dbconnections_alarm --template-body file://$PWD/db_connections_alarm.yml
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudWatch Alarm for DataBase Connections Monitoring in RDS
+  
+Resources:
+  RDSFreeStorageAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmActions:
+         < define the action which needs to be taken or just manually scale the infra to handle those connections>
+      AlarmDescription: 'RDS DataBaseConnections Alarm'
+      ComparisonOperator: GreaterThanThreshold
+      DatapointsToAlarm: 1
+      Dimensions:
+      - Name: DBInstanceIdentifier
+        Value: <MySQL-RDS->
+      EvaluationPeriods: 1
+      MetricName: DatabaseConnections
+      Namespace: AWS/RDS
+      Period: 60
+      Statistic: Average
+      Threshold: 100
+ 
