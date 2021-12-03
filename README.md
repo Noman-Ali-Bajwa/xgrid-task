@@ -49,13 +49,15 @@ So you've configured an aws porfile now which will later be used.
 >Replace the value of "key" with the name of the your account key-pair (.pem file)
 ```sh
 aws cloudformation create-stack --stack-name appStack --template-body file://\$PWD/AppStack.yml --profile test --region us-east-1
-#
+
 ```
 >Wait for some moments , you'll be returned a stack_id indicating the initialization of cloudformation stack creation.
 ![alt text](https://github.com/Noman-Ali-Bajwa/xgrid-task/blob/main/stack_created.png?raw=true)
 >Navigate to aws web management console cloudformation dashboard to view the stack status.
 >You may navigate to resources tab and confirm the creation of all the resources (may take some time).
 ![alt text](https://github.com/Noman-Ali-Bajwa/xgrid-task/blob/main/appStack_dashboard.png?raw=true)
+       
+       
 
 >After all the resources have been created, navigate to the outputs tab and note down the EC2 instance ElasticIP and >Database connection string.
 ![alt text](https://github.com/Noman-Ali-Bajwa/xgrid-task/blob/main/appStack_outputs.png?raw=true)
