@@ -15,11 +15,12 @@ Resources:
     Metadata:
     # configure the packages and commands to be executed on first boot.
       "AWS::CloudFormation::Init":
+      #right the config block.
         configSets:
           setup:
             - install_server
             - install_mysql_client
-        install_server:
+        install_apache2:
           packages:
             apt:
               apache2: []
@@ -50,6 +51,7 @@ Resources:
   # - execute cfn-init script
   # - install python library
   # - enable apache2 cgi module
+  # - calls cfn-signal to indicate that instance is done.
       UserData: 
         Fn::Base64: !Sub | 
            #!/bin/bash -xe
@@ -59,8 +61,9 @@ Resources:
            sudo easy_install aws-cfn-bootstrap-latest
            sudo /usr/local/bin/cfn-init --stack ${AWS::StackName} --resource EC2Instance --region ${AWS::Region}
            pip3 install mysqlclient
-           a2enmod cgi      
-           
+           a2enmod cgi
+           #CloudFormation creates a signal that the cfn-signal can call. The -e $? is the exit code of the previous process.
+           /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource Instance --region ${AWS::Region}
   #get an Elastic IP address and associate it with our EC2 instance.
   IPAddress:
     Type: AWS::EC2::EIP
