@@ -14,7 +14,7 @@
 - *Clone the repository*
 - *Generate an AWS key pair if you don't have one*
 - *Download account access keys csv from the aws IAM dashboard*- 
-- *Create AWS Cloudformation stack for infrastructure proisioning through appStack.yml*
+- *Create AWS Cloudformation stack for infrastructure provisioning through appStack.yml*
 - *Tranfser source to EC2 instance and replace database hostname in index.py.*
 - *Cofigure apache2 to run cgi scripts from root directory*
 - *Connect with rds instance from EC2 and populate database using dummy_db.sql*
@@ -45,13 +45,13 @@ aws configure --profile test
 ---
 So you've configured an aws porfile now which will later be used.
 ## Create Cloudformation Stack.
->Navigate to the Stack_templates directory , open AppStack.yml in an editor
->Replace the value of "key" with the name of the your account key-pair (.pem file)
+>Navigate to the Stack_templates directory, open AppStack.yml in an editor.
+>Replace the value of "key" with the name of the your account key-pair (.pem file).
 ```sh
 aws cloudformation create-stack --stack-name appStack --template-body file://\$PWD/AppStack.yml --profile test --region us-east-1
 #
 ```
->Wait for some moments , you'll be returned a stack_id indicating the initialization of cloudformation stack creation.
+>Wait for some moments, you'll be returned a stack_id indicating the initialization of cloudformation stack creation.
 ![alt text](https://github.com/Noman-Ali-Bajwa/xgrid-task/blob/main/stack_created.png?raw=true)
 ---
 >Navigate to aws web management console cloudformation dashboard to view the stack status.
